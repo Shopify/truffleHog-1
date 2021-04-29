@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--since_commit", dest="since_commit", help="Only scan from a given commit hash")
     parser.add_argument("--max_depth", dest="max_depth", help="The max commit depth to go back when searching for secrets")
     parser.add_argument("--branch", dest="branch", help="Name of the branch to be scanned")
-    parser.add_argument("--rev_list", action="append",
+    parser.add_argument("--rev_list", action="append", default=[],
                         help="Options to be passed in git-rev-list for commits iteration. "
                              "For multiple options repeat the argument and keep in mind that git-rev-parse option `-` should"
                              "be replaced with `_`. For values with spaces inside use quotes. "
@@ -97,7 +97,7 @@ def main():
 
     rev_list = dict((key.strip(), value.strip())
                     for key, value in (pair.split("=")
-                                       for pair in args.rev_list or dict()))
+                                       for pair in args.rev_list))
 
     output = find_strings(args.git_url, args.since_commit, args.max_depth, args.output_json, args.do_regex, do_entropy,
                           surpress_output=False, custom_regexes=regexes, branch=args.branch, repo_path=args.repo_path, path_inclusions=path_inclusions, path_exclusions=path_exclusions, allow=allow,
