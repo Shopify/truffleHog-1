@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--since_commit", dest="since_commit", help="Only scan from a given commit hash")
     parser.add_argument("--max_depth", dest="max_depth", help="The max commit depth to go back when searching for secrets")
     parser.add_argument("--branch", dest="branch", help="Name of the branch to be scanned")
-    parser.add_argument("--rev_list", action="update",
+    parser.add_argument("--rev_list", action="append",
                         help="Options to be passed in git-rev-list for commits iteration. "
                              "For multiple options repeat the argument and keep in mind that git-rev-parse option `-` should"
                              "be replaced with `_`. For values with spaces inside use quotes. "
