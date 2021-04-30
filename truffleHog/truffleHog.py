@@ -12,6 +12,7 @@ import hashlib
 import tempfile
 import os
 import re
+import ast
 import json
 import stat
 from git import Repo
@@ -33,8 +34,8 @@ def main():
     parser.add_argument("--rev_list", action="append", default=[],
                         help="Options to be passed in git-rev-list for commits iteration. "
                              "For multiple options repeat the argument and keep in mind that git-rev-parse option `-` should"
-                             "be replaced with `_`. For values with spaces inside use quotes. "
-                             "Example: --rev_list max_age='2021-01-01 11:15:59' --rev_list skip=10 "
+                             "be replaced with `_`. For boolean flags use True/False as a value. For values with spaces inside use quotes. "
+                             "Example: --rev_list max_age='2021-01-01 11:15:59' --rev_list skip=10 --no_merges=True "
                              "WARNING: If you want to limit amount of commits by count use --max_depth instead")
     parser.add_argument('-i', '--include_paths', type=argparse.FileType('r'), metavar='INCLUDE_PATHS_FILE',
                         help='File with regular expressions (one per line), at least one of which must match a Git '
@@ -95,7 +96,7 @@ def main():
             if pattern and not pattern.startswith('#'):
                 path_exclusions.append(re.compile(pattern))
 
-    rev_list = dict((key.strip(), value.strip())
+    rev_list = dict((key.strip(), try_eval_value(value.strip()))
                     for key, value in (pair.split("=")
                                        for pair in args.rev_list))
 
@@ -109,6 +110,12 @@ def main():
         sys.exit(1)
     else:
         sys.exit(0)
+
+def try_eval_value(value):
+    try:
+        return ast.literal_eval(value)
+    except SyntaxError:
+        return value
 
 def read_pattern(r):
     if r.startswith("regex:"):
